@@ -1,4 +1,16 @@
 # CS50 Web Project 1, Books
+
+## Table of Contents
+- [ ] [Registeration](#registration)
+- [ ] [Login](#login)
+- [ ] [Logout](#logout)
+- [ ] [Import](#import)
+- [ ] [Search](#search)
+- [ ] [Book Page](#book_page)
+- [ ] [Review Submission](#registration)
+- [ ] [Goodreads Review](#goodreads_review)
+- [ ] [Data API Access](#data_api_access)
+
 ## Introduction:
 This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1:HarvardX+CS50W+Web/course/).
 
@@ -15,8 +27,6 @@ This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1
     <summary>Login</summary>
     Users, once registered, should be able to log in to your website with their username and password.
 </details>
-
-- [ ]
 
 ### Logout
 <details>
