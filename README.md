@@ -1,7 +1,7 @@
 # CS50's Web Programming with Python and JavaScript, Project 1, Books
 
 ## Table of Contents
-### [Specifications](#specifications)
+- [Specifications](#specifications)
 - [ ] [Registeration](#registration)
 - [ ] [Login](#login)
 - [ ] [Logout](#logout)
@@ -12,7 +12,7 @@
 - [ ] [Goodreads Review](#goodreads-review)
 - [ ] [API Access](#api-access)
 - [ ] [Keep In Mind](#keep-in-mind)
-### [Project Content](#project-content)
+- [Project Content](#project-content)
 
 ---
 
