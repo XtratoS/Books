@@ -107,5 +107,6 @@ This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1
 ## Project content
 <details>
     <summary>application.py</summary>
-    <pre>The root python file for the application</pre>
+    
+>The root python file for the application
 </details>
