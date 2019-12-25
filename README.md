@@ -1,20 +1,26 @@
-# CS50 Web Project 1, Books
+# CS50's Web Programming with Python and JavaScript, Project 1, Books
 
 ## Table of Contents
+### [Specifications](#specifications)
 - [ ] [Registeration](#registration)
 - [ ] [Login](#login)
 - [ ] [Logout](#logout)
 - [ ] [Import](#import)
 - [ ] [Search](#search)
-- [ ] [Book Page](#book_page)
+- [ ] [Book Page](#book-page)
 - [ ] [Review Submission](#registration)
-- [ ] [Goodreads Review](#goodreads_review)
-- [ ] [Data API Access](#data_api_access)
+- [ ] [Goodreads Review](#goodreads-review)
+- [ ] [API Access](#api-access)
+- [ ] [Keep In Mind](#keep-in-mind)
+### [Project Content](#project-content)
 
+--------------------
 ## Introduction:
 This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1:HarvardX+CS50W+Web/course/).
 
-## Specifications:
+## Specifications
+<details>
+    <summary>Specifications</summary>
 
 ### Registration
 <details>
@@ -67,7 +73,8 @@ This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1
 ### API Access
 <details>
     <summary>API Access</summary>
-    If users make a GET request to your website’s /api/<isbn> route, where <isbn> is an ISBN number, your website should return a JSON response containing the book’s title, author, publication date, ISBN number, review count, and average score. The resulting JSON should follow the format:
+    If users make a GET request to your website’s /api/<isbn> route, where <isbn> is an ISBN number, your website should return a JSON response containing the book’s title, author, publication date, ISBN number, review count, and average score. The resulting JSON should follow the format:<br>
+    <pre><code>
     {
       "title": "Memory",
       "author": "Doug Lloyd",
@@ -76,14 +83,24 @@ This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1
       "review_count": 28,
       "average_score": 5.0
     }
+    </code></pre>
 </details>
 
-If the requested ISBN number isn’t in your database, your website should return a 404 error.
+### Keep in Mind
+- If the requested ISBN number isn’t in your database, your website should return a 404 error.
 
-You should be using raw SQL commands (as via SQLAlchemy’s execute method) in order to make database queries. You should not use the SQLAlchemy ORM (if familiar with it) for this project.
+- You should be using raw SQL commands (as via SQLAlchemy’s execute method) in order to make database queries. You should not use the SQLAlchemy ORM (if familiar with it) for this project.
 
-In README.md, include a short writeup describing your project, what’s contained in each file, and (optionally) any other additional information the staff should know about your project.
+- In README.md, include a short writeup describing your project, what’s contained in each file, and (optionally) any other additional information the staff should know about your project.
 
-If you’ve added any Python packages that need to be installed in order to run your web application, be sure to add them to requirements.txt!
+- If you’ve added any Python packages that need to be installed in order to run your web application, be sure to add them to requirements.txt!
 
-Beyond these requirements, the design, look, and feel of the website are up to you! You’re also welcome to add additional features to your website, so long as you meet the requirements laid out in the above specification!
+- Beyond these requirements, the design, look, and feel of the website are up to you! You’re also welcome to add additional features to your website, so long as you meet the requirements laid out in the above specification!
+
+</details>
+
+## Project content
+<details>
+    <summary>application.py</summary>
+    <pre>The root python file for the application</pre>
+</details>
