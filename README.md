@@ -14,9 +14,12 @@
 - [ ] [Keep In Mind](#keep-in-mind)
 ### [Project Content](#project-content)
 
---------------------
+---
+
 ## Introduction:
 This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1:HarvardX+CS50W+Web/course/).
+
+---
 
 ## Specifications
 <details>
@@ -98,6 +101,8 @@ This is my first project in [CS50 Web](https://courses.edx.org/courses/course-v1
 - Beyond these requirements, the design, look, and feel of the website are up to you! You’re also welcome to add additional features to your website, so long as you meet the requirements laid out in the above specification!
 
 </details>
+
+---
 
 ## Project content
 <details>
