@@ -1,0 +1,11 @@
+.container {
+    padding:25;
+    margin:25 auto;
+    text-align: center;
+}
+.row {
+    padding:15;
+}
+form {
+    margin:15 auto;
+}
