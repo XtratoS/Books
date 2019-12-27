@@ -1,0 +1,5 @@
+{
+	"comment" : "remove this line and rename this file to 'config.json'"
+	"API_KEY" : "Goodreads API Key",
+	"DATABASE_URL" : "Database URL"
+}
