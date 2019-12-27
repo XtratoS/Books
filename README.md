@@ -5,7 +5,7 @@
 - [x] [Registeration](#registration)
 - [x] [Login](#login)
 - [x] [Logout](#logout)
-- [ ] [Import](#import)
+- [x] [Import](#import)
 - [ ] [Search](#search)
 - [ ] [Book Page](#book-page)
 - [ ] [Review Submission](#registration)
