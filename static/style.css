@@ -1,11 +1,19 @@
-.container {
-    padding:25;
-    margin:25 auto;
+.center {
     text-align: center;
 }
 .row {
-    padding:15;
+    padding:10;
 }
 form {
-    margin:15 auto;
+    margin:10 auto;
+}
+.navbartitle, .hover-light:hover {
+    color: white !important;
+    background-color:#3e464d;
+}
+.padding-h-10 {
+    padding:0 10
+}
+.bg-dark-warning {
+    background-color: #ffc1075b
 }
