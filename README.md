@@ -2,10 +2,10 @@
 
 ## Table of Contents
 - [Specifications](#specifications)
-- [ ] [Registeration](#registration)
-- [ ] [Login](#login)
-- [ ] [Logout](#logout)
-- [ ] [Import](#import)
+- [x] [Registeration](#registration)
+- [x] [Login](#login)
+- [x] [Logout](#logout)
+- [x] [Import](#import)
 - [ ] [Search](#search)
 - [ ] [Book Page](#book-page)
 - [ ] [Review Submission](#registration)
