@@ -2,9 +2,9 @@
 
 ## Table of Contents
 - [Specifications](#specifications)
-- [ ] [Registeration](#registration)
-- [ ] [Login](#login)
-- [ ] [Logout](#logout)
+- [x] [Registeration](#registration)
+- [x] [Login](#login)
+- [x] [Logout](#logout)
 - [ ] [Import](#import)
 - [ ] [Search](#search)
 - [ ] [Book Page](#book-page)
