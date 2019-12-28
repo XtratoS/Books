@@ -13,3 +13,12 @@ def recollect_hash(pw, salt):
 
 def error(msg):
     return render_template("error.html", msg=msg)
+
+
+def jsonify_book(book):
+    return {
+        "isbn":book[0],
+        "title":book[1],
+        "author":book[2],
+        "year":book[3]
+    }
