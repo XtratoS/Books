@@ -6,7 +6,7 @@
 - [x] [Login](#login)
 - [x] [Logout](#logout)
 - [x] [Import](#import)
-- [ ] [Search](#search)
+- [x] [Search](#search)
 - [ ] [Book Page](#book-page)
 - [ ] [Review Submission](#registration)
 - [ ] [Goodreads Review](#goodreads-review)
