@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{%block main%}
+    {%if session%}    
+    <div class="alert alert-success">  
+        Welcome, {{session['username']}}!,
+    {%endif%}
+        check the documentation <a class="badge badge-primary" href="https://github.com/XtratoS/Books">here</a>
+    </div>
+
+{%endblock%}
