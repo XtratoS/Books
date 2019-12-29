@@ -7,7 +7,7 @@
 - [x] [Logout](#logout)
 - [x] [Import](#import)
 - [x] [Search](#search)
-- [ ] [Book Page](#book-page)
+- [x] [Book Page](#book-page)
 - [ ] [Review Submission](#registration)
 - [ ] [Goodreads Review](#goodreads-review)
 - [ ] [API Access](#api-access)
