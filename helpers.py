@@ -1,5 +1,6 @@
 from flask import render_template
 from werkzeug.security import check_password_hash, generate_password_hash
+from time import time
 
 def gen_hash(pw):
     pwhash = generate_password_hash(pw, method=f'pbkdf2:sha256:150000', salt_length=8)
