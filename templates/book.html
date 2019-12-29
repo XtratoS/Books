@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{%block main%}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">{{data['title']}}</h4>
+        <h6 class="card-subtitle mb-4 text-muted" onclick="moreBySameAuthor()">By: {{data['author']}} <p class="btn btn-secondary badge badge-secondary font-weight-light">more books the same author</p></h6>
+        <table class="table card-text">
+            <tr>
+                <td>
+                    Rating
+                </td>
+                <td>
+                    {{data['rating']}}
+                </td>
+                <td id="our-rating-stars">
+                    {%for i in range(5)%}
+                    <span class="fa fa-star"></span>
+                    {%endfor%}
+                </td>
+                <td>
+                    by <b>{{reviews|length}}</b> Readers
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Goodreads Rating
+                </td>
+                <td>
+                    {{data['goodreads_rating']}}
+                </td>
+                <td id="goodreads-rating-stars">
+                    {%for i in range(5)%}
+                    <span class="fa fa-star"></span>
+                    {%endfor%}
+                </td>
+                <td>
+                    by <b>{{data['goodreads_count']}}</b> Readers
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+{%endblock%}
+
+{%block script%}
+<script>
+    var data = JSON.parse("{{data}}".replace(/&#39;/g, '"'))
+    function moreBySameAuthor(){
+        $.redirect("/search", {"search": data["author"]}, "POST")
+    }
+    function star_styling(div, datapoint) {
+        rating = data[datapoint];
+        stars = div.querySelectorAll("span");
+        let i = 0;
+        while (stars[i]) {
+            console.log(stars[i]);
+            while (rating >= 1) {
+                stars[i].className = stars[i].className + " checked";
+                rating--;
+                i++;
+            }
+            if (rating >= 0.5) {
+                stars[i].className = stars[i].className + " checked-50";
+                rating -= 0.5;
+                i++;
+            }
+            i++;
+        }
+        return;
+    }
+    $(document).ready(function () {
+        self_rating = document.querySelector("#our-rating-stars");
+        goodreads_rating = document.querySelector("#goodreads-rating-stars");
+        star_styling(self_rating, "rating");
+        star_styling(goodreads_rating, "goodreads_rating");        
+    })
+</script>
+{%endblock%}
