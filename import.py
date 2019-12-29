@@ -29,14 +29,15 @@ def main():
         print("Couldn't open file books.csv")
         return 1
     data.pop(0)
+    authors = set([datum[2] for datum in data])
+    lauth = len(authors)
     l = len(data)
     c = 0
     # construct queries to add authors to database from memory
-    for datum in data:
-        name = datum[2]
-        db.execute("INSERT INTO authors (name) VALUES (:name)", {"name":name})
+    for author in authors:
+        db.execute("INSERT INTO authors (name) VALUES (:name)", {"name":author})
         if c % 15 == 0:
-            print("Adding Authors: " + "{0:.2f}".format(c / l * 100) + "%", end="\r")
+            print("Adding Authors: " + "{0:.2f}".format(c / lauth * 100) + "%", end="\r")
         c += 1
     print("Adding Authors: 100.00%")
     db.commit()
