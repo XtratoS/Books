@@ -2,8 +2,8 @@ import json
 import os
 
 import requests
-from flask import Flask, redirect, render_template, request, session, url_for
-from flask_login import login_required, LoginManager
+from flask import Flask, redirect, render_template, request, session, url_for, jsonify
+from tempfile import mkdtemp
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,9 +24,21 @@ if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
 # Configure session to use filesystem
+app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+# Ensure templates are auto-reloaded
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# Ensure responses aren't cached
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -94,14 +106,34 @@ def search():
         return render_template("search.html")
     # POST
     else:
+        # get data from form
         search_string = request.form.get("search")
-        search_res_proxy = db.execute("SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE isbn LIKE :S OR title LIKE :S OR authors.name LIKE :S;", {"S": f"%{search_string}%"}).fetchall()
+        substitutions = {"S": f"%{search_string}%"}
+        search_options = request.form.getlist("search-option")
+        # create the query dynamically
+        query = "SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE"
+        i = 0
+        # force the 3 options if no options were selected
+        default_options = ['isbn', 'title', 'name'] 
+        if len(search_options) == 0:
+            search_options = default_options
+        for option in search_options:
+            if option not in default_options:
+                return error("Unexpected error")
+            if "LIKE" in query:
+                query += " OR"
+            query += f" {option} LIKE :S"
+            i = i+1
+        query += ';'
+        print(query, substitutions)
+        # execute the query and fetch results
+        search_res_proxy = db.execute(query, substitutions).fetchall()
         jsonified_results = [jsonify_book(book) for book in search_res_proxy]
-        return render_template("search.html", search_string=search_string ,results=jsonified_results)
+        return render_template("search.html", search_string=search_string,results=jsonified_results, search_options=search_options)
 
 
-@app.route("/books/<string:isbn>", methods=["GET"])
-def books(isbn):
+@app.route("/api/<string:isbn>", methods=["GET"])
+def api(isbn):
     # GET
     book = jsonify_book(db.execute("SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE isbn = :isbn",
         {"isbn":isbn}).fetchone())
@@ -131,4 +163,11 @@ def books(isbn):
         'goodreads_count': ratings[book['isbn']]['count'],
         'reviews': reviews
     }
-    return render_template('book.html', data=data)
+    return jsonify(data)
+
+
+@app.route("/books/<string:isbn>", methods=["GET"])
+def books(isbn):
+    api_request = requests.get(request.base_url.replace("books", "api"))
+    data = api_request.text
+    return render_template("book.html", data=data)

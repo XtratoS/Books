@@ -1,0 +1,73 @@
+[1mdiff --git a/config-example.json b/config-example.json[m
+[1mdeleted file mode 100644[m
+[1mindex bdf2bfd..0000000[m
+[1m--- a/config-example.json[m
+[1m+++ /dev/null[m
+[36m@@ -1,5 +0,0 @@[m
+[31m-{[m
+[31m-	"comment" : "remove this line and rename this file to 'config.json'"[m
+[31m-	"API_KEY" : "Goodreads API Key",[m
+[31m-	"DATABASE_URL" : "Database URL"[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/import.py b/import.py[m
+[1mdeleted file mode 100644[m
+[1mindex 56db7e1..0000000[m
+[1m--- a/import.py[m
+[1m+++ /dev/null[m
+[36m@@ -1,54 +0,0 @@[m
+[31m-from sqlalchemy import create_engine[m
+[31m-from sqlalchemy.orm import scoped_session, sessionmaker[m
+[31m-from csv import reader[m
+[31m-import json[m
+[31m-import os[m
+[31m-[m
+[31m-def main():[m
+[31m-    # load the configuration file[m
+[31m-    try:[m
+[31m-        with open("config.json", mode='r') as config_file:[m
+[31m-            config = json.load(config_file)[m
+[31m-            os.environ["DATABASE_URL"] = config["DATABASE_URL"][m
+[31m-    except:[m
+[31m-        print("Couldn't open file config.json")[m
+[31m-        return 1[m
+[31m-[m
+[31m-    # Set up database[m
+[31m-    engine = create_engine(os.getenv("DATABASE_URL"))[m
+[31m-    db = scoped_session(sessionmaker(bind=engine))[m
+[31m-[m
+[31m-    # read the file and add the data to the memory[m
+[31m-    data = [][m
+[31m-    try:[m
+[31m-        with open("books.csv") as csvfile:[m
+[31m-            csv_reader = reader(csvfile, delimiter=",")[m
+[31m-            for line in csv_reader:[m
+[31m-                data.append(line)[m
+[31m-    except:[m
+[31m-        print("Couldn't open file books.csv")[m
+[31m-        return 1[m
+[31m-    data.pop(0)[m
+[31m-    l = len(data)[m
+[31m-    c = 0[m
+[31m-    # construct queries to add authors to database from memory[m
+[31m-    for datum in data:[m
+[31m-        name = datum[2][m
+[31m-        db.execute("INSERT INTO authors (name) VALUES (:name)", {"name":name})[m
+[31m-        if c % 15 == 0:[m
+[31m-            print("Adding Authors: " + "{0:.2f}".format(c / l * 100) + "%", end="\r")[m
+[31m-        c += 1[m
+[31m-    print("Adding Authors: 100.00%")[m
+[31m-    db.commit()[m
+[31m-    c = 0[m
+[31m-    for datum in data:[m
+[31m-        name = datum[2][m
+[31m-        auth_id = db.execute("SELECT id FROM authors WHERE name = :name", {"name":name}).fetchone()[0][m
+[31m-        db.execute("INSERT INTO books (isbn, title, author_id, year) VALUES (:isbn, :title, :author_id, :year)", {"isbn":datum[0], "title":datum[1], "author_id":auth_id, "year":datum[3]})[m
+[31m-        if c % 15 == 0:[m
+[31m-            print("Adding Books: " + "{0:.2f}".format(c / l * 100) + "%", end="\r")[m
+[31m-        c += 1[m
+[31m-    db.commit()[m
+[31m-    print("Adding Books: 100.00%")[m
+[31m-if __name__ == "__main__":[m
+[31m-    main()[m
+\ No newline at end of file[m

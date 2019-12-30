@@ -44,7 +44,8 @@
 
 {%block script%}
 <script>
-    var data = JSON.parse("{{data}}".replace(/&#39;/g, '"'))
+    var data = "{{data}}"
+    console.log(data)
     function moreBySameAuthor(){
         $.redirect("/search", {"search": data["author"], "search-option": ["name"]}, "POST")
     }
