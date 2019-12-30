@@ -46,7 +46,7 @@
 <script>
     var data = JSON.parse("{{data}}".replace(/&#39;/g, '"'))
     function moreBySameAuthor(){
-        $.redirect("/search", {"search": data["author"]}, "POST")
+        $.redirect("/search", {"search": data["author"], "search-option": ["name"]}, "POST")
     }
     function star_styling(div, datapoint) {
         rating = data[datapoint];
