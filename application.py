@@ -8,7 +8,7 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import gen_hash, error, recollect_hash, jsonify_book
+from helpers import gen_hash, error, recollect_hash, jsonify_book, json_error
 from time import time
 
 app = Flask(__name__)
@@ -62,10 +62,10 @@ def login():
     password = request.form.get("password")
     query = db.execute("SELECT * FROM users WHERE username = :username", {"username":username}).fetchone()
     if not query:
-        return error("Invalid Username/Password")
+        return error("Invalid Username/Password", 400)
     pwhash = recollect_hash(query[2], query[3])
     if not check_password_hash(pwhash, password):
-        return error("INVALID")
+        return error("Invalid Username/Password", 400)
     session["user_id"] = query[0]
     session["username"] = query[1]
     return redirect(url_for("index"))
@@ -122,38 +122,57 @@ def search():
                 return error("Unexpected error")
             if "LIKE" in query:
                 query += " OR"
-            query += f" {option} LIKE :S"
+            query += f" {option} ILIKE :S"
             i = i+1
         query += ';'
-        print(query, substitutions)
         # execute the query and fetch results
         search_res_proxy = db.execute(query, substitutions).fetchall()
         jsonified_results = [jsonify_book(book) for book in search_res_proxy]
-        return render_template("search.html", search_string=search_string,results=jsonified_results, search_options=search_options)
+        return render_template("search.html", search_string=search_string, results=jsonified_results, search_options=search_options)
 
 
 @app.route("/api/<string:isbn>", methods=["GET"])
 def api(isbn):
     # GET
-    book = jsonify_book(db.execute("SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE isbn = :isbn",
-        {"isbn":isbn}).fetchone())
+    # Get book data from database
+    book_queryres = db.execute("SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE isbn = :isbn",
+        {"isbn":isbn}).fetchone()
+    if not book_queryres:
+        return json_error("Book not found", 404)
+    book = jsonify_book(book_queryres)
+    # Get book reviews from database
     reviews = db.execute("SELECT username, text, rating FROM reviews JOIN users ON reviews.user_id = users.id WHERE book_id = :isbn",
         {"isbn": isbn}).fetchall()
-    our_avg_float = db.execute("SELECT AVG(rating) FROM reviews WHERE book_id = :isbn",
-        {"isbn": isbn}).fetchone()[0] or 2.5
+    # Get book average rating from database
+    our_avg_float_queryres = db.execute("SELECT AVG(rating) FROM reviews WHERE book_id = :isbn",
+        {"isbn": isbn}).fetchone()
+    if not our_avg_float_queryres or not our_avg_float_queryres[0]:
+        our_avg_float = 0
+    else:
+        our_avg_float = our_avg_float_queryres[0]
+    # Format the average rating properly
     our_avg = "{0:.2f}".format(our_avg_float)
+    # Get current time
     now = round(time())
     # Only use the api if there's no ratings for the book in the database or if it's been more than 1 minute since the last request
     if not ratings.get(isbn, False) or now - ratings.get(isbn, {'time':0})['time'] > 60:
+        # Initiate the API request
         response = requests.get(f"https://www.goodreads.com/book/review_counts.json?isbns={isbn}")
-        goodreads_book = response.json()['books'][0]
+        # Check the status code of the response, generate response if failture
         if response.status_code != 200:
-            return error("Unexpected error, book not found in goodread's library")
+            goodreads_book = {
+                'average_rating':0,
+                'work_ratings_count':0
+            }
+        else:
+            goodreads_book = response.json()['books'][0]
+        # Format the ratings
         ratings[isbn] = {
             'time': round(time()),
             'avg': goodreads_book['average_rating'],
             'count': goodreads_book['work_ratings_count']
         }
+    # Reformat the data before returning the response
     data = {
         'isbn': book['isbn'],
         'title': book['title'],
@@ -166,8 +185,15 @@ def api(isbn):
     return jsonify(data)
 
 
+# Use own API and pass data to books.html view
 @app.route("/books/<string:isbn>", methods=["GET"])
 def books(isbn):
-    api_request = requests.get(request.base_url.replace("books", "api"))
-    data = api_request.text
+    api_response = requests.get(request.base_url.replace("books", "api"))
+    if api_response.status_code != 200:
+        return error("Book not found", api_response.status_code)
+    data = api_response.json()
     return render_template("book.html", data=data)
+
+
+# @app.route("/review", methods=["GET"])
+# def review()
