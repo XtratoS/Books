@@ -4,10 +4,10 @@
         Search {%if results%}Results{%endif%}
     </h2>
     <div class="container mt-4 mb-4">
-        <form method="POST" class="center col-6">
+        <form method="POST" class="center col-12">
             <div class="input-group btn-group">
-                <input id="search-string" type="text" class="form-control" placeholder="isbn, title or author's name" name="search" autofocus>
-                <button type="submit" class="btn btn-primary">🔎</button>
+                <input id="search-string" type="text" class="form-control" placeholder="isbn, title or author's name" name="search" autofocus required>
+                <input type="button" class="btn btn-primary" onclick="submit_search();" value="🔎"></input>
             </div>
             <div class="input-group mt-3">
                 <div class="form-check form-check-inline col-4 m-auto">
@@ -61,8 +61,77 @@
 
 {%block script%}
     <script>
+        function storeSearch(){
+            // store the checked checkboxes
+            checkboxes = document.querySelectorAll("input[name=search-option]")
+            for (checkbox of checkboxes){
+                if (checkbox.checked){
+                    try {
+                        localStorage.setItem(checkbox.value, 'true');
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+
+            }
+            // store the search-string
+            search_string = document.querySelector("#search-string")
+            try {
+                localStorage.setItem('search-string', search_string.value)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        function restoreSearch(){
+            // recheck the checkboxes
+            checkboxes = document.querySelectorAll("input[name=search-option]");
+            for (checkbox of checkboxes){
+                if (localStorage.getItem(checkbox.value) == 'true'){
+                    checkbox.setAttribute('checked', 'true');
+                }
+            }
+            // use the previous search string
+            search_box = document.querySelector("#search-string");
+            if (localStorage.getItem("search-string")){
+                document.querySelector('#search-string').value = localStorage.getItem("search-string");
+            }
+            // then remove they keys from localstorage
+            for (key of ['isbn', 'title', 'name', 'search-string']){
+                localStorage.removeItem(key);
+            }
+        }
+
+        function submit_search(){
+            storeSearch();
+            // Make sure that textbox has a value
+            let ss = document.querySelector("#search-string")
+            if (ss.value == ""){
+                return false;
+            }
+            // Make sure that atleast one checkbox is checked
+            // If no boxes are checked, all 3 options will be forced
+            let checkboxes = document.querySelectorAll("input[name=search-option]");
+            let optionsValid = false;
+            for (box of checkboxes){
+                console.log(box)
+                if (box.checked){
+                    optionsValid = true;
+                }
+            }
+            if (!optionsValid){
+                for (box of checkboxes){
+                    console.log(box)
+                    box.setAttribute("style", "outline:1px solid red;");
+                }
+                return false;
+            }
+            document.querySelector("form").submit();
+        }
+
         function addlink(row, data, dataindex, cells){
             row.onclick = function(){
+                storeSearch();
                 window.location = "/books/" + this.dataset.isbn
             }
         }
@@ -75,15 +144,7 @@
             "searching": false,
             "createdRow": addlink
             });
-
-            // check the boxes from the previous search
-            let search_options = JSON.parse('{{search_options}}'.replace(/&#39;/g, '"'))
-            for (option of search_options){
-                document.querySelector(`#${option}`).setAttribute("checked", "true")
-            }
-
-            // set the value of the searchbox to the prev search string
-            document.querySelector('#search-string').setAttribute('value', '{{search_string}}')
+            restoreSearch();
         } );
     </script>
 {%endblock%}
