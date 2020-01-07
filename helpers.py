@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, make_response, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from time import time
 
@@ -12,8 +12,12 @@ def recollect_hash(pw, salt):
     return f"pbkdf2:sha256:150000${salt}${pw}"
 
 
-def error(msg):
-    return render_template("error.html", msg=msg)
+def json_error(msg, code):
+    return make_response(jsonify(msg), code)
+
+
+def error(msg, code):
+    return render_template("error.html", msg=msg), code if code else 200
 
 
 def jsonify_book(book):
