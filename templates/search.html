@@ -30,7 +30,7 @@
         <table id="results" class="table table-striped table-hover center">
             <thead>
                 <tr>
-                    <!-- <th>isbn</th> -->
+                    <th class="text-muted">ISBN</th>
                     <th>Title</th>
                     <th>Author</th>
                     <th>Year</th>
@@ -40,9 +40,9 @@
             <tbody>
             {%for result in results%}
                 <tr data-isbn="{{result['isbn']}}">
-                    <!-- <td>
+                    <td class="text-muted">
                         {{result['isbn']}}
-                    </td> -->
+                    </td>
                     <td>
                         {{result['title']}}
                     </td>
@@ -84,7 +84,6 @@
         }
 
         function restoreSearch(){
-            console.log(localStorage)
             // recheck the checkboxes
             checkboxes = document.querySelectorAll("input[name=search-option]");
             for (checkbox of checkboxes){
@@ -115,14 +114,12 @@
             let checkboxes = document.querySelectorAll("input[name=search-option]");
             let optionsValid = false;
             for (box of checkboxes){
-                console.log(box)
                 if (box.checked){
                     optionsValid = true;
                 }
             }
             if (!optionsValid){
                 for (box of checkboxes){
-                    console.log(box)
                     box.setAttribute("style", "outline:1px solid red;");
                 }
                 return false;
@@ -148,11 +145,12 @@
             }
             // DataTables
             $('#results').DataTable({
-            "language": {
+            language: {
                 "emptyTable": "No books found..."
             },
-            "searching": false,
-            "createdRow": addlink
+            searching: false,
+            createdRow: addlink,
+            order: [[1, 'asc']]
             });
             restoreSearch();
         } );
