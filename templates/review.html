@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{%block main%}
+    <h3>
+        Register
+    </h3>
+    <form method="POST" class="center width-50">
+        <div class="row">
+            <div class="col">
+                <input autofocus type="text" name="username" class="form-control" placeholder="Username">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input type="password" name="password" class="form-control" placeholder="Password">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+{%endblock%}
