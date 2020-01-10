@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import json
 import os
 
@@ -62,10 +63,10 @@ def login():
     password = request.form.get("password")
     query = db.execute("SELECT * FROM users WHERE username = :username", {"username":username}).fetchone()
     if not query:
-        return error("Invalid Username/Password", 400)
+        return render_template("login.html", msg="Invalid username or password")
     pwhash = recollect_hash(query[2], query[3])
     if not check_password_hash(pwhash, password):
-        return error("Invalid Username/Password", 400)
+        return render_template("login.html", msg="Invalid username or password")
     session["user_id"] = query[0]
     session["username"] = query[1]
     return redirect(url_for("index"))
