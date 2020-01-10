@@ -196,5 +196,24 @@ def books(isbn):
     return render_template("book.html", data=data)
 
 
+# Add a review to a book
+@app.route("/review/<string:isbn>", methods=["GET", "POST"])
+def review(isbn):
+    # Double check that this book exists
+    api_response = requests.get(request.base_url.replace("review", "api"))
+    if api_response.status_code != 200:
+        return error("Book not found", api_response.status_code)
+    # Check if the user already has a review for this book
+    rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id", {"user_id": session["user_id"]})
+    print(rev_query)
+    print(rev_query.fetchone())
+    
+    data = api_response.json()
+    # GET
+    if request.method == "GET":
+        return render_template("review.html", data=data)
+    # POST
+
+
 # @app.route("/review", methods=["GET"])
 # def review()
