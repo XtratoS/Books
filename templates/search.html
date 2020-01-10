@@ -84,6 +84,7 @@
         }
 
         function restoreSearch(){
+            console.log(localStorage)
             // recheck the checkboxes
             checkboxes = document.querySelectorAll("input[name=search-option]");
             for (checkbox of checkboxes){
@@ -136,6 +137,15 @@
             }
         }
         $(document).ready( function () {
+            // store the author name if we got to the search from a book page
+            if (document.referrer.includes("books")){
+                try {
+                    localStorage.setItem('search-string', '{{search_string}}');
+                    localStorage.setItem('name', 'true')
+                } catch (error) {
+                    console.error(error)
+                }
+            }
             // DataTables
             $('#results').DataTable({
             "language": {
