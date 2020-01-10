@@ -3,6 +3,9 @@
     <h3>
         Login
     </h3>
+    {%if msg%}
+    <div class="alert alert-danger">{{msg}}</div>
+    {%endif%}
     <form method="POST" class="center width-50">
         <div class="row">
             <div class="col">
@@ -16,7 +19,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <button class="btn btn-primary">Submit</button>
+                <button class="btn btn-primary">Login</button>
             </div>
         </div>
     </form>
