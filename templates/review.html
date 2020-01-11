@@ -1,17 +1,24 @@
 {% extends "layout.html" %}
 {%block main%}
     <h3>
-        Register
+        Submit a Review
     </h3>
     <form method="POST" class="center width-50">
         <div class="row">
             <div class="col">
-                <input autofocus type="text" name="username" class="form-control" placeholder="Username">
+                <div id="rating">
+                    <label for="rating" class="text-muted">Rating: </label>
+                    <div id="stars" style="display:inline-block">
+                        {%for i in range(5)%}<!--
+                        --><span id="{{i}}" class="fa fa-star"></span><!--
+                        -->{%endfor%}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <input type="password" name="password" class="form-control" placeholder="Password">
+                <textarea  name="text" class="form-control" placeholder="Opinion goes here..." rows="5"></textarea>
             </div>
         </div>
         <div class="row">
@@ -20,4 +27,61 @@
             </div>
         </div>
     </form>
+{%endblock%}
+{%block script%}
+<script>
+
+    var currentRating = -1;
+    var stars;
+
+    function highlight(star){
+        if (!star.className.includes("checked"))
+        {
+            star.className += " checked";
+        }
+    }
+
+    function removeHighlight(star){
+        star.className = star.className.replace(' checked', '');
+    }
+
+    function highlightTo(star){
+        if (typeof(star) == "object"){
+            i = star.id;
+        }else if(typeof(star) == "string"){
+            i = parseInt(star);
+        }else{
+            i = star;
+        }
+        l = stars.length-1;
+        while(l > i){
+            removeHighlight(stars[l--]);
+        }
+        while(i >= 0){
+            highlight(stars[i--]);
+        }
+    }
+
+    function changeRating(star){
+        currentRating = parseInt(star.id)
+        highlightTo(currentRating)
+    }
+
+    $(document).ready(function () {
+
+        stars = document.querySelectorAll(".fa-star")
+        for (star of stars){
+            star.onclick = function(star){
+                changeRating(star.target);
+            }
+            star.onmouseover = function(star){
+                highlightTo(star.target)
+            }
+        }
+        document.querySelector("#stars").onmouseout = function(){
+            highlightTo(currentRating);
+        }
+    })
+
+</script>
 {%endblock%}
