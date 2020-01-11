@@ -47,3 +47,6 @@ footer {
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+.fa-star{
+    padding:2;
+}
