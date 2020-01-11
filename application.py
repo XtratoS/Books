@@ -144,20 +144,30 @@ def api(isbn):
     if not book_queryres:
         return json_error("Book not found", 404)
     book = jsonify_book(book_queryres)
+
     # Get book reviews from database
     reviews = db.execute("SELECT username, text, rating FROM reviews JOIN users ON reviews.user_id = users.id WHERE book_id = :isbn",
         {"isbn": isbn}).fetchall()
+    
     # Get book average rating from database
-    our_avg_float_queryres = db.execute("SELECT AVG(rating) FROM reviews WHERE book_id = :isbn",
+    our_avg_float_queryres = db.execute("SELECT AVG(rating), COUNT(*) FROM reviews WHERE book_id = :isbn",
         {"isbn": isbn}).fetchone()
-    if not our_avg_float_queryres or not our_avg_float_queryres[0]:
+    
+    # Check for None
+    if not our_avg_float_queryres[0]:
         our_avg_float = 0
     else:
         our_avg_float = our_avg_float_queryres[0]
+    
+    # Get the count
+    our_count = our_avg_float_queryres[1]
+    
     # Format the average rating properly
     our_avg = "{0:.2f}".format(our_avg_float)
+
     # Get current time
     now = round(time())
+
     # Only use the api if there's no ratings for the book in the database or if it's been more than 1 minute since the last request
     if not ratings.get(isbn, False) or now - ratings.get(isbn, {'time':0})['time'] > 60:
         # Initiate the API request
@@ -176,16 +186,22 @@ def api(isbn):
             'avg': goodreads_book['average_rating'],
             'count': goodreads_book['work_ratings_count']
         }
+    
+    # Reformat reviews
+    reviews = [{"username":rev[0], "text":rev[1], "rating":rev[2]} for rev in reviews]
+
     # Reformat the data before returning the response
     data = {
         'isbn': book['isbn'],
         'title': book['title'],
         'author': book['author'],
         'rating': our_avg,
+        'our_count': our_count,
         'goodreads_rating': ratings[book['isbn']]['avg'],
         'goodreads_count': ratings[book['isbn']]['count'],
         'reviews': reviews
     }
+    print(data)
     return jsonify(data)
 
 
@@ -219,6 +235,13 @@ def review(isbn):
     if request.method == "GET":
         return render_template("review.html", data=data)
     # POST
+    rating = request.form.get("rating")
+    text = request.form.get("text")
+    if not rating:
+        return render_template("review.html", data=data, msg="Invalid Star Rating provided, please try again")
+    db.execute("INSERT INTO reviews (user_id, book_id, text, rating) VALUES (:user_id, :book_id, :text, :rating)",
+    {"user_id": session.get('user_id'), "book_id": isbn, "text": text, "rating": rating})
+    return redirect(url_for("books", isbn=isbn))
 
 
 # @app.route("/review", methods=["GET"])
