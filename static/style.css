@@ -1,52 +1,71 @@
 body {
     height:100%
 }
+
+main {
+    min-height: 100%;
+}
+
+footer {
+    bottom: 0;
+    padding-bottom: 25px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .center {
     text-align: center;
 }
+
 .width-50 {
     width:50%;
 }
+
 .row {
     padding:10;
 }
+
 form {
     margin:10 auto;
 }
+
 .navbartitle, .hover-light:hover {
     color: white !important;
     background-color:#3e464d;
 }
+
 .padding-h-10 {
     padding:0 10
 }
+
 .padding-15 {
     padding: 15
 }
+
 .bg-dark-warning {
     background-color: #ffc1075b
 }
-footer {
-    margin-top: 15%;
-    bottom: 0;
-    left: 50%;
-}
+
 .vertical-center {
     padding: 8;
     vertical-align: middle;
 }
+
 .vertical-margin-10 {
     margin-top: 10;
     margin-bottom: 10;
 }
+
 .checked {
     color: orange;
 }
+
 .checked-50 {
     background: linear-gradient(90deg, orange 50%, black 50%, black 100%);
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
 .fa-star{
     padding:2;
 }
