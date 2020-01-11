@@ -57,6 +57,9 @@ def index():
 def login():
     # GET
     if request.method == "GET":
+        msg = request.args.get("msg")
+        if msg:
+            return render_template("login.html", msg=msg)
         return render_template("login.html")
     # POST
     username = request.form.get("username")
@@ -199,15 +202,18 @@ def books(isbn):
 # Add a review to a book
 @app.route("/review/<string:isbn>", methods=["GET", "POST"])
 def review(isbn):
+    if session.get('user_id') is None:
+        return redirect(url_for("login", msg="Please login to add a review"))
     # Double check that this book exists
     api_response = requests.get(request.base_url.replace("review", "api"))
     if api_response.status_code != 200:
         return error("Book not found", api_response.status_code)
     # Check if the user already has a review for this book
-    rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id", {"user_id": session["user_id"]})
-    print(rev_query)
-    print(rev_query.fetchone())
-    
+    rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id AND book_id = :isbn",
+        {"user_id": session["user_id"], "isbn": isbn})
+    res = rev_query.fetchone()
+    if res != None and res[0] > 0:
+        return render_template("review.html", data=data, msg="You have already reviewed this book")
     data = api_response.json()
     # GET
     if request.method == "GET":
