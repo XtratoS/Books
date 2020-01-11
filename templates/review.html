@@ -6,12 +6,14 @@
     {%if msg%}
     <div class="alert alert-danger">{{msg}}</div>
     {%endif%}
+    <div class="alert alert-danger" style="display:none" id="jsalert"></div>
     <form method="POST" class="center width-50">
+        <input name="rating" type="number" id="rating-value" style="display:none" value="-1" min="1" max="5" required>
         <div class="row">
             <div class="col">
                 <div id="rating">
                     <label for="rating" class="text-muted">Rating: </label>
-                    <div id="stars" style="display:inline-block">
+                    <div id="stars">
                         {%for i in range(5)%}<!--
                         --><span id="{{i}}" class="fa fa-star"></span><!--
                         -->{%endfor%}
@@ -21,12 +23,12 @@
         </div>
         <div class="row">
             <div class="col">
-                <textarea  name="text" class="form-control" placeholder="Opinion goes here..." rows="5"></textarea>
+                <textarea name="text" class="form-control" placeholder="Opinion goes here... (Optional)" rows="5"></textarea>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <button class="btn btn-primary">Submit</button>
+                <button class="btn btn-primary" onclick="validateForm();">Submit</button>
             </div>
         </div>
     </form>
@@ -66,8 +68,9 @@
     }
 
     function changeRating(star){
-        currentRating = parseInt(star.id)
-        highlightTo(currentRating)
+        currentRating = parseInt(star.id);
+        highlightTo(currentRating);
+        document.getElementById("rating-value").value = currentRating;
     }
 
     $(document).ready(function () {
@@ -85,6 +88,22 @@
             highlightTo(currentRating);
         }
     })
+
+    function validateForm(){
+        let rating = document.getElementById("rating-value").value;
+        let text = document.querySelector("[name='text']").value;
+        let alert = document.querySelector("#jsalert");
+        if (rating < 0 || rating > 4){
+            alert.innerHTML = "Please choose a rating by pressing on the stars";
+            alert.style.display = "block";
+            return false;
+        }else{
+            alert.innerHTML = "";
+            alert.style.display = "none";
+            document.querySelector("button").disabled = true;
+            return true;
+        }
+    }
 
 </script>
 {%endblock%}
