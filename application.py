@@ -138,6 +138,8 @@ def search():
 @app.route("/api/<string:isbn>", methods=["GET"])
 def api(isbn):
     api_response = requests.get(request.base_url.replace("api", "ext_api"))
+    if api_response.status_code != 200:
+        return json_error(api_response.json(), 404)
     data = api_response.json()
     mini_data = {
         "title": data['title'],
@@ -210,6 +212,7 @@ def ext_api(isbn):
         'isbn': book['isbn'],
         'title': book['title'],
         'author': book['author'],
+        'year': book['year'],
         'rating': our_avg,
         'our_count': our_count,
         'goodreads_rating': ratings[book['isbn']]['avg'],
