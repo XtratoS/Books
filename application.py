@@ -137,6 +137,21 @@ def search():
 
 @app.route("/api/<string:isbn>", methods=["GET"])
 def api(isbn):
+    api_response = requests.get(request.base_url.replace("api", "ext_api"))
+    data = api_response.json()
+    mini_data = {
+        "title": data['title'],
+        "author": data['author'],
+        "year": data['year'],
+        "isbn": data['isbn'],
+        "review_count": data['our_count'],
+        "average_score": data['rating']
+    }
+    return jsonify(mini_data)
+
+
+@app.route("/ext_api/<string:isbn>", methods=["GET"])
+def ext_api(isbn):
     # GET
     # Get book data from database
     book_queryres = db.execute("SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE isbn = :isbn",
@@ -208,7 +223,7 @@ def api(isbn):
 # Use own API and pass data to books.html view
 @app.route("/books/<string:isbn>", methods=["GET"])
 def books(isbn):
-    api_response = requests.get(request.base_url.replace("books", "api"))
+    api_response = requests.get(request.base_url.replace("books", "ext_api"))
     if api_response.status_code != 200:
         return error("Book not found", api_response.status_code)
     data = api_response.json()
@@ -221,7 +236,7 @@ def review(isbn):
     if session.get('user_id') is None:
         return redirect(url_for("login", msg="Please login to add a review"))
     # Double check that this book exists
-    api_response = requests.get(request.base_url.replace("review", "api"))
+    api_response = requests.get(request.base_url.replace("review", "ext_api"))
     if api_response.status_code != 200:
         return error("Book not found", api_response.status_code)
     # Check if the user already has a review for this book
