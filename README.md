@@ -8,9 +8,9 @@
 - [x] [Import](#import)
 - [x] [Search](#search)
 - [x] [Book Page](#book-page)
-- [ ] [Review Submission](#registration)
-- [ ] [Goodreads Review](#goodreads-review)
-- [ ] [API Access](#api-access)
+- [x] [Review Submission](#registration)
+- [x] [Goodreads Review](#goodreads-review)
+- [x] [API Access](#api-access)
 - [ ] [Keep In Mind](#keep-in-mind)
 - [Project Content](#project-content)
 
