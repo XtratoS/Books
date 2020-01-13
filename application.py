@@ -64,6 +64,7 @@ def login():
     # POST
     username = request.form.get("username")
     password = request.form.get("password")
+    returnto = request.args.get("returnto")
     query = db.execute("SELECT * FROM users WHERE username = :username", {"username":username}).fetchone()
     if not query:
         return render_template("login.html", msg="Invalid username or password")
@@ -72,7 +73,9 @@ def login():
         return render_template("login.html", msg="Invalid username or password")
     session["user_id"] = query[0]
     session["username"] = query[1]
-    return redirect(url_for("index"))
+    if returnto is None:
+        return redirect(url_for("index"))
+    return redirect(returnto)
 
 
 @app.route("/logout", methods=["GET"])
@@ -115,22 +118,23 @@ def search():
         substitutions = {"S": f"%{search_string}%"}
         search_options = request.form.getlist("search-option")
         # create the query dynamically
-        query = "SELECT isbn, title, name, year FROM books JOIN authors ON books.author_id = authors.id WHERE"
+        query = "SELECT isbn, title, name, year, ROUND(AVG(rating), 2) AS rating FROM books JOIN authors ON books.author_id = authors.id LEFT OUTER JOIN reviews ON reviews.book_id = books.isbn WHERE"
         i = 0
         # force the 3 options if no options were selected
-        default_options = ['isbn', 'title', 'name'] 
+        default_options = ['isbn', 'title', 'name']
         if len(search_options) == 0:
             search_options = default_options
         for option in search_options:
             if option not in default_options:
-                return error("Unexpected error")
+                return error("Unexpected error", 400)
             if "LIKE" in query:
                 query += " OR"
             query += f" {option} ILIKE :S"
             i = i+1
-        query += ';'
+        query += " GROUP BY isbn, name;"
         # execute the query and fetch results
         search_res_proxy = db.execute(query, substitutions).fetchall()
+        print(search_res_proxy)
         jsonified_results = [jsonify_book(book) for book in search_res_proxy]
         return render_template("search.html", search_string=search_string, results=jsonified_results, search_options=search_options)
 
@@ -219,7 +223,6 @@ def ext_api(isbn):
         'goodreads_count': ratings[book['isbn']]['count'],
         'reviews': reviews
     }
-    print(data)
     return jsonify(data)
 
 
@@ -233,22 +236,56 @@ def books(isbn):
     return render_template("book.html", data=data)
 
 
+@app.route("/ext_api/reviews")
+def api_reviews():
+    user_id = request.args.get('user_id')
+    isbn = request.args.get('isbn')
+    query_str = "SELECT * FROM reviews"
+    if user_id is not None:
+        query_str += " WHERE user_id = :user_id"
+    if isbn is not None:
+        if user_id is not None:
+            query_str += " AND "
+        else:
+            query_str += " WHERE "
+        query_str += "book_id = :isbn"
+    query = db.execute(query_str, {"user_id": user_id, "isbn":isbn}).fetchall()
+    count = len(query)
+    return jsonify({
+        "reviews": [
+            {
+                "user_id": row[0],
+                "isbn": row[1],
+                "review_text": row[2],
+                "rating": row[3]
+            }
+        for row in query],
+        "count": count
+    })
+
+
 # Add a review to a book
 @app.route("/review/<string:isbn>", methods=["GET", "POST"])
 def review(isbn):
-    if session.get('user_id') is None:
-        return redirect(url_for("login", msg="Please login to add a review"))
+    user_id = session.get('user_id')
+    if user_id is None:
+        return redirect(url_for("login", msg="Please login to add a review", returnto=request.url))
     # Double check that this book exists
     api_response = requests.get(request.base_url.replace("review", "ext_api"))
     if api_response.status_code != 200:
         return error("Book not found", api_response.status_code)
     # Check if the user already has a review for this book
-    rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id AND book_id = :isbn",
-        {"user_id": session["user_id"], "isbn": isbn})
-    res = rev_query.fetchone()
-    if res != None and res[0] > 0:
-        return render_template("review.html", data=data, msg="You have already reviewed this book")
+    api_response = requests.get(request.url_root.rstrip('/') + url_for("api_reviews", user_id=user_id, isbn=isbn))
+    if api_response.status_code != 200:
+        return error("Unexpected error", api_response.status_code)
     data = api_response.json()
+    if data['count'] != 0:
+        return redirect(url_for("books", isbn=isbn, msg="You have already reviewed this book"))
+    # rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id AND book_id = :isbn",
+    #     {"user_id": session["user_id"], "isbn": isbn})
+    # res = rev_query.fetchone()
+    # if res != None and res[0] > 0:
+
     # GET
     if request.method == "GET":
         return render_template("review.html", data=data)
