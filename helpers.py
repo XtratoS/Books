@@ -22,8 +22,9 @@ def error(msg, code):
 
 def jsonify_book(book):
     return {
-        "isbn":book[0],
-        "title":book[1],
-        "author":book[2],
-        "year":book[3]
+        "isbn": book[0],
+        "title": book[1],
+        "author": book[2],
+        "year": book[3],
+        "our_rating": book[4] if book[4] is not None else "Unrated"
     }
