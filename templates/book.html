@@ -49,14 +49,7 @@
 
 {%block script%}
 <script>
-    var data = "{{data}}"
-    .replace(/[a-zA-Z]&#39;[a-zA-Z]/g,
-        (x)=>{return x.replace(/&#39;/, "'")})
-    .replace(/\s&#34;/g,
-        (x)=>{return x.replace(/&#34;/, '"')})
-    .replace(/&#39;/g, '"')
-    .replace(/&#34;/g, "'")
-    data = JSON.parse(data)
+    data = JSON5.parse(`{{data|safe}}`);
     function moreBySameAuthor(){
         $.redirect("/search", {"search": data["author"], "search-option": ["name"]}, "POST")
     }
@@ -65,7 +58,6 @@
         stars = div.querySelectorAll("span");
         let i = 0;
         while (stars[i]) {
-            console.log(stars[i]);
             while (rating >= 1) {
                 stars[i].className = stars[i].className + " checked";
                 rating--;
