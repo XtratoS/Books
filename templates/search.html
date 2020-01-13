@@ -34,7 +34,7 @@
                     <th>Title</th>
                     <th>Author</th>
                     <th>Year</th>
-                    <!-- <th></th> -->
+                    <th>Rating</th>
                     <th></th>
                     <!-- <th>Reviews</th> -->
                 </tr>
@@ -54,9 +54,9 @@
                     <td>
                         {{result['year']}}
                     </td>
-                    <!-- <td>
+                    <td>
                         {{result['our_rating']}}
-                    </td> -->
+                    </td>
                     <td>
                         <a class="badge badge-primary">
                             View Details
@@ -138,7 +138,7 @@
         }
 
         function addlink(cell, cellData, rowData, dataindex, cells){
-            cell.querySelector("a").setAttribute("href", "/books/" + cell.parentNode.dataset.isbn)
+            cell.parentNode.querySelector("a").setAttribute("href", "/books/" + cell.parentNode.dataset.isbn)
             cell.parentNode.onclick = function(){
                 window.location = "/books/" + cell.parentNode.dataset.isbn
             }
@@ -162,8 +162,8 @@
                 searching: false,
                 order: [[1, 'asc']],
                 columnDefs: [
-                    { orderable: false, targets: [4] },
-                    { createdCell: addlink, targets: [4]}
+                    {orderable: false, targets: [4]},
+                    {createdCell: addlink, targets: [4]}
                 ]
             });
             restoreSearch();
