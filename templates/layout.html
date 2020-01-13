@@ -27,6 +27,9 @@
         <!-- Redirect https://github.com/mgalante/jquery.redirect -->
         <script src="https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 
+        <!--http://json5.org-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/json5/0.5.1/json5.js" integrity="sha256-foj3Ksn74b86Mzlc2HOruKtipPFPhhVr92gHEstoa3A=" crossorigin="anonymous"></script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{%block title%}{%endblock%}</title>
@@ -50,15 +53,15 @@
                 </button>
                 <div class="collapse navbar-collapse align-items-right" id="navbar">
                     <ul class="navbar-nav ml-auto mt-2">
-                    {%if session.username%}
-                        <li class="nav-item">
-                            <a class="nav-link rounded hover-light text-light" href="{{url_for('index')}}">Index</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link rounded hover-light text-light" href="{{url_for('index')}}">Reviews</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link rounded hover-light text-light" href="{{url_for('search')}}">Search</a>
+                        </li>
+                    {%if session.username%}
+                        <li class="nav-item">
+                            <a class="nav-link rounded hover-light text-light" href="{{url_for('index')}}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link rounded hover-light text-light" href="{{url_for('api_reviews')}}">My Reviews</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link rounded hover-light text-light" href="{{url_for('logout')}}">Logout</a>
@@ -76,6 +79,12 @@
             </nav>
         </header>
         <main class="container p-5">
+            {%if request.args.get('msg') and not msg%}
+                {% set msg = request.args.get('msg') -%}
+            {%endif%}
+            {%if msg%}
+                <div class="alert alert-danger">{{msg}}</div>
+            {%endif%}
             {%block main%}{%endblock%}
         </main>
         <footer>
