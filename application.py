@@ -281,10 +281,6 @@ def review(isbn):
     data = api_response.json()
     if data['count'] != 0:
         return redirect(url_for("books", isbn=isbn, msg="You have already reviewed this book"))
-    # rev_query = db.execute("SELECT COUNT(*) FROM reviews WHERE user_id = :user_id AND book_id = :isbn",
-    #     {"user_id": session["user_id"], "isbn": isbn})
-    # res = rev_query.fetchone()
-    # if res != None and res[0] > 0:
 
     # GET
     if request.method == "GET":
