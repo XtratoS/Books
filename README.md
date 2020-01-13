@@ -11,7 +11,7 @@
 - [x] [Review Submission](#registration)
 - [x] [Goodreads Review](#goodreads-review)
 - [x] [API Access](#api-access)
-- [ ] [Keep In Mind](#keep-in-mind)
+- [Keep In Mind](#keep-in-mind)
 - [Project Content](#project-content)
 
 ---
