@@ -3,9 +3,6 @@
     <h3>
         Login
     </h3>
-    {%if msg%}
-    <div class="alert alert-danger">{{msg}}</div>
-    {%endif%}
     <form method="POST" class="center width-50">
         <div class="row">
             <div class="col">
@@ -23,4 +20,20 @@
             </div>
         </div>
     </form>
+{%endblock%}
+
+{%block script%}
+<script>
+    // https://stackoverflow.com/questions/831030/how-to-get-get-request-parameters-in-javascript
+    function get(name){
+        if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+            return decodeURIComponent(name[1]);
+    }
+
+    $(document).ready(function () {
+        let returnto = get('returnto');
+        console.log(returnto);
+    })
+
+</script>
 {%endblock%}
